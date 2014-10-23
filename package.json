@@ -1,0 +1,17 @@
+{
+	"name": "jseb",
+	"version": "0.0.1",
+	"description": "JavaScript Expression Builder which build JS expression from jsep parsed AST tokens.",
+	"keywords": ["expression", "builder", "ast"],
+	"main": "main.js",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/mytharcher/jseb.git"
+	},
+	"author": "mytharcher <mytharcher@gmail.com>",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/mytharcher/jseb/issues"
+	},
+	"homepage": "https://github.com/mytharcher/jseb"
+}
