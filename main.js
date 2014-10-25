@@ -21,6 +21,9 @@
 			Identifier: function (token) {
 				return token.name;
 			},
+			Accessor: function (token) {
+				return token.name;
+			},
 			MemberExpression: function (token) {
 				var property = jseb.build(token.property);
 				return jseb.build(token.object) +
