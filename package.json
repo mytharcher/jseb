@@ -1,6 +1,6 @@
 {
 	"name": "jseb",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "JavaScript Expression Builder which build JS expression from jsep parsed AST tokens.",
 	"keywords": ["expression", "builder", "ast"],
 	"main": "main.js",

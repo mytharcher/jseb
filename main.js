@@ -70,14 +70,14 @@
 			}
 		},
 
-		build: function (token) {
+		build: function (token, options) {
 			var type = token.type;
 			var builder = jseb.builder[type];
 			var preprocessor = jseb.preprocessor[type];
 			var postprocessor = jseb.postprocessor[type];
-			var result = preprocessor && preprocessor(token) || token;
+			var result = preprocessor && preprocessor(token, options) || token;
 			result = builder(result);
-			return postprocessor && postprocessor(result) || result;
+			return postprocessor && postprocessor(result, options) || result;
 		},
 
 		registerPreprocessor: function (type, fn) {
