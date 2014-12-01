@@ -18,66 +18,71 @@
 		postprocessor: {},
 
 		builder: {
-			Identifier: function (token) {
+			Identifier: function (token, parent) {
 				return token.name;
 			},
-			Accessor: function (token) {
+			Accessor: function (token, parent) {
 				return token.name;
 			},
-			MemberExpression: function (token) {
-				var property = jseb.build(token.property);
-				return jseb.build(token.object) +
+			MemberExpression: function (token, parent) {
+				var property = jseb.build(token.property, token);
+				return jseb.build(token.object, token) +
 					(token.computed ? '[' + property + ']' : '.' + property);
 			},
-			Literal: function (token) {
+			Literal: function (token, parent) {
 				return token.raw;
 			},
-			ThisExpression: function (token) {
+			ThisExpression: function (token, parent) {
 				return 'this';
 			},
-			CallExpression: function (token) {
-				return jseb.build(token.callee) + '(' +
-					token.arguments.map(jseb.build).join() + ')';
+			CallExpression: function (token, parent) {
+				return jseb.build(token.callee, token) + '(' +
+					token.arguments.map(function (item) {
+						return jseb.build(item, token);
+					}).join() + ')';
 			},
-			UnaryExpression: function (token) {
-				return token.operator + jseb.build(token.argument);
+			UnaryExpression: function (token, parent) {
+				return token.operator + jseb.build(token.argument, token);
 			},
-			BinaryExpression: function (token) {
+			BinaryExpression: function (token, parent) {
 				var isLeftOperation = token.left.type == jseb.BINARY_EXP ||
 					token.left.type == jseb.LogicalExpression;
 				var isRightOperation = token.right.type == jseb.BINARY_EXP ||
 					token.right.type == jseb.LogicalExpression;
-				var left = jseb.build(token.left);
+				var left = jseb.build(token.left, token);
 				if (isLeftOperation) {
 					left = '(' + left + ')';
 				}
-				var right = jseb.build(token.right);
+				var right = jseb.build(token.right, token);
 				if (isRightOperation) {
 					right = '(' + right + ')';
 				}
 				return left + token.operator + right;
 			},
-			LogicalExpression: function (token) {
+			LogicalExpression: function (token, parent) {
 				return jseb.builder.BinaryExpression(token);
 			},
-			ConditionalExpression: function (token) {
-				return '(' + jseb.build(token.test) + '?' +
-					jseb.build(token.consequent) + ':' +
-					jseb.build(token.alternate) + ')';
+			ConditionalExpression: function (token, parent) {
+				return '(' + jseb.build(token.test, token) + '?' +
+					jseb.build(token.consequent, token) + ':' +
+					jseb.build(token.alternate, token) + ')';
 			},
-			Array: function (token) {
-				return '[' + token.body.map(jseb.build).join() + ']';
+			Array: function (token, parent) {
+				return '[' + token.body.map(function (item) {
+					return jseb.build(item, token);
+				}).join() + ']';
 			}
 		},
 
-		build: function (token, options) {
+		build: function (token, parent, options) {
+			options = options || {};
 			var type = token.type;
 			var builder = jseb.builder[type];
 			var preprocessor = jseb.preprocessor[type];
 			var postprocessor = jseb.postprocessor[type];
-			var result = preprocessor && preprocessor(token, options) || token;
+			var result = preprocessor && preprocessor(token, parent, options) || token;
 			result = builder(result);
-			return postprocessor && postprocessor(result, options) || result;
+			return postprocessor && postprocessor(result, parent, options) || result;
 		},
 
 		registerPreprocessor: function (type, fn) {
